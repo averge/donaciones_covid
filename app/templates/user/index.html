@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Listado de Usuarios{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='user/styles.css') }}">
+{% endblock styles %}
+
+{% block content %}
+    <div class="page-title">Listado de usuarios</div>
+    <div class="user-content">
+        <div class="search-bar">
+            <form id="search-form" action="{{ url_for('users.index') }}">
+                <img id="more-options" alt="Flecha para mostrar mas opciones de filtrado" src="{{ url_for('static', filename='icons/more-options.png') }}">
+                <input type="text" placeholder="Buscar usuario..." id="username" name="username" value="{{ searchQ['busqueda'] if searchQ else '' }}">
+                {% if searchQ['busqueda'] or searchQ['no_activo']%}   
+                    <a id="search-remove" href="{{ url_for('users.index') }}">
+                        <img alt="Icono para remover busqueda" src="{{ url_for('static', filename='icons/remove.png') }}">
+                    </a>
+                {% endif %}
+                <img id="search-lupa" alt="Icono de lupa" src="{{ url_for('static', filename='icons/lupa.png') }}">
+                <div id="more-options-box">
+                    <div class="form-field-checkbox">
+                        <label for="no_activos">Mostrar usuarios no activos</label>
+                        <input type="checkbox" id="no_activos" name="no_activos" {{ searchQ['no_activo'] }}>    
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% if users %}
+            <div class="user-cards">
+                {% for user in users %}
+                    <div class="user-box">
+                        <div class="username">
+                            {{ user['first_name'] }} {{ user['last_name'] }}
+                        </div>
+                        <div class="user-data">
+                            <div>
+                                {{ user['username'] }}
+                            </div>
+                            <div>
+                                {{ user['email'] }}
+                            </div>
+                        </div>
+                        <div class="buttons">
+                            <form action="{{ url_for('users.update', username=user['username']) }}" ><input type="submit" value="Editar" /></form>
+                            {% if not (user['username'] == session.get('username')) %}
+                                <form onsubmit="return confirm('Esta seguro que quiere eliminar?');"  action="{{ url_for('users.destroy', username=user['username']) }}" method="POST" >
+                                    <input type="hidden" name="_method" value="DELETE" />
+                                    <button class="error" type="submit">Eliminar</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>   
+                {% endfor %}
+            </div>
+            {% if total_pages > 1 %}
+                <div class="page-results-parent">
+                    <div class="page-results">
+                        {% for i in range(1, total_pages+1) %}
+                            {% if i == current_page %}
+                                <div class="page-number active">
+                                    {{ i }}
+                                </div>
+                            {% else %}
+                                <a href="{{ url_for('users.index', page=i, username=searchQ['busqueda'], no_activos=searchQ['no_activo']) }}">
+                                    <div class="page-number {{ 'active' if i == current_page else '' }}">
+                                        {{ i }}
+                                    </div>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="not-found">Ningun usuario encontrado</div>
+        {% endif %}
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+{% endblock %}

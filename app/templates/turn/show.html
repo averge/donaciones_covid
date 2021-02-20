@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %} Turno de {{turno.email}} {% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='turn/show.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="page-title">Turno de "{{turno.email}}" </div>
+    <div class="turno-main">
+        <div class="data-row">
+            <span class="category">Email: </span>{{ turno.email }}
+        </div>
+        <div class="data-row">
+            <span class="category">Fecha: </span>{{ turno.date.strftime('%d/%m/%Y') }}
+        </div>
+        <div class="data-row">
+            <span class="category">Hora: </span>{{ turno.hour_block.strftime('%H:%M') }}hs
+        </div>
+        <div class="data-row">
+            <span class="category">Telefono: </span>{{ turno.phone_number }}
+        </div>
+        <div class="data-row">
+            <span class="category">Centro: </span> <a class="no-styles-a" href="{{ url_for('centers.show', id=turno.center) }}">{{ centro }}</a>
+        </div>
+    </div>
+    <div class="buttons">
+        <a class="no-styles-a" href="{{ url_for('turns.update', id=turno.id) }}">Editar</a>
+        <form onsubmit="return confirm('Esta seguro que quiere eliminar?');"  action="{{ url_for('turns.destroy', id=turno.id) }}" method="POST" >
+            <input type="hidden" name="_method" value="DELETE" />
+            <button class="error" type="submit">Eliminar</button>
+        </form>
+    </div>
+{% endblock %}
+

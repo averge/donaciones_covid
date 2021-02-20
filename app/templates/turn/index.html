@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Listado de turnos{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='centers/styles.css') }}">
+{% endblock %}
+{% block content %}
+    <div class="page-title">Busqueda de turnos</div>
+        <div class="search-bar">
+            <form id="search-form" action="{{ url_for('turns.index') }}">
+                <img id="more-options" alt="Flecha para mostrar mas opciones de filtrado" src="{{ url_for('static', filename='icons/more-options.png') }}">
+                <input type="text" placeholder="Buscar turno..." id="buscar" name="buscar" value="{{searchQ['buscar']}}">
+                {% if searchQ['buscar'] %}
+                    <a id="search-remove" href="{{ url_for('turns.index') }}">
+                        <img alt="Icono para remover busqueda" src="{{ url_for('static', filename='icons/remove.png') }}">
+                    </a>
+                {% endif %}
+                <img id="search-lupa" alt="Icono de lupa" src="{{ url_for('static', filename='icons/lupa.png') }}">
+                <div id="more-options-box">
+                    <div class="form-field">
+                        <label for="tipo_busqueda">Tipo de busqueda</label>
+                        <br>
+                        <select name="tipo_busqueda" id="tipo_busqueda">
+                                <option value="email" {{'selected' if searchQ['tipo'] == 'email' }}>Email</option>
+                                <option value="nombre_centro" {{'selected' if searchQ['tipo'] == 'nombre_centro' }}>Nombre de centro</option>  
+                        </select>
+                    </div>
+                    <div class="form-field-checkbox">
+                        <label for="antiguos">Incluir turnos antiguos</label>
+                        <input type="checkbox" id="antiguos" name="antiguos" {{ searchQ['antiguos'] }}>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% if turns %}
+            <table>
+                <tr>
+                    <th>Email</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Centro</th>
+                    <th>Detalles</th>
+                </tr>
+                {% for t in turns %}
+                    <tr>
+                        <td><span>{{ t.email }}</span></td>
+                        <td>{{ t.date.strftime('%d/%m/%Y') }}</td>
+                        <td>{{t.hour_block.strftime('%H:%M')}}hs</td>
+                        <td><a class="no-styles-a" href="{{ url_for('centers.show', id=t.center) }}">{{ centros[t.center] }}</a></td>
+                        <td><a class="no-styles-a" href="{{ url_for('turns.show', id=t.id) }}">Detalles</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+            {% if total_pages > 1 %}
+                <div class="page-results-parent">
+                    <div class="page-results">
+                        {% for i in range(1, total_pages+1) %}
+                            {% if i == current_page %}
+                                <div class="page-number active">
+                                    {{ i }}
+                                </div>
+                            {% else %}
+                                <a href="{{ url_for('turns.index', page=i, buscar=searchQ['buscar'], tipo=searchQ['tipo'], antiguos=searchQ['antiguos']) }}">
+                                    <div class="page-number {{ 'active' if i == current_page else '' }}">
+                                        {{ i }}
+                                    </div>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            {% if searchQ['buscar'] %}
+                <div class="not-found">Ningun turno encontrado</div>
+            {% else %}
+                <div class="not-found">Ingrese parametros de busqueda</div>
+            {% endif %}
+        {% endif %}
+
+{% endblock content %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+{% endblock scripts %}

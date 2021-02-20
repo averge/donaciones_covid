@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Crear turno{% endblock %}
+{% block content %}
+    <div class="form-container">
+        <form class="form" method="POST" action="{{ url_for('turns.new') }}">
+            <input id="csrf_token" name="csrf_token" type="hidden" value="{{ CSRF_TOKEN_STRING }}">
+            <div class="form-title">Crear un nuevo Turno</div>
+            <div class="form-field">
+                <label for="center-name">Para Centro</label><br>
+                <input type="hidden" name="center-name" id="center-name" value="{{ center_name }}">
+                <select name="center-name-disabled" id="center-name-disabled" disabled>
+                    <option value="{{ center_name }}">{{ center_name }}</option>
+                </select>
+            </div>
+            <input type="hidden" id="center-id" name="center-id" value="{{ center_id }}">
+            <div class="form-field">
+                <label for="date">Fecha</label><br>
+                <input type="hidden" name="date" id="date" value="{{date}}">
+                <select name="date-disabled" id="date-disabled" disabled>
+                    <option value="{{date}}">{{date}}</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label for="start-hour">Hora</label><br>
+                <input type="hidden" name="start-hour" id="start-hour" value="{{start_hour.split(':')[0]}}">
+                <select name="start-hour-disabled" id="start-hour-disabled" disabled>
+                    <option value="{{start_hour.split(':')[0]}}">{{start_hour.split(":")[0]}}</option>
+                </select>
+                <input type="hidden" name="start-minute" id="start-minute" value="{{start_hour.split(':')[1]}}">
+                <select name="start-minute-disabled" id="start-minute-disabled" disabled>
+                    <option value="{{start_hour.split(':')[1]}}">{{ start_hour.split(":")[1] }}</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label for="phone">Telefono</label><br>
+                <input type="text" id="phone" name="phone" autofocus="" value="{{ last_form['phone'] if last_form else '' }}" required>
+            </div>
+            <div class="form-field">
+                <label for="email">E-mail</label><br>
+                <input type="email" id="email" name="email" value="{{ last_form['email'] if last_form else '' }}" required>
+            </div>
+            <div class="buttons">
+                <button>Crear</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

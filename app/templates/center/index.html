@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Listado de centros de ayuda{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='centers/styles.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="page-title">Centros de ayuda</div>
+    <div class="centros-content">
+        <div class="search-bar">
+            <form id="search-form" action="{{ url_for('centers.index') }}">
+                <img id="more-options" alt="Flecha para mostrar mas opciones de filtrado" src="{{ url_for('static', filename='icons/more-options.png') }}">
+                <input type="text" placeholder="Buscar centro..." id="busqueda" name="busqueda" value="{{ searchQ['busqueda'] if searchQ else '' }}">
+                {% if searchQ['busqueda'] or searchQ['estado']%}   
+                    <a id="search-remove" href="{{ url_for('centers.index') }}">
+                        <img alt="Icono para remover busqueda" src="{{ url_for('static', filename='icons/remove.png') }}">
+                    </a>
+                {% endif %}
+                <img id="search-lupa" alt="Icono de lupa" src="{{ url_for('static', filename='icons/lupa.png') }}">
+                <div id="more-options-box">
+                    <div class="form-field">
+                        <label for="estado">Estado</label>
+                        <br>
+                        <select name="estado" id="estado">
+                            {% for estado in estados %}
+                                <option value="{{ estado.name }}" {{ 'selected' if searchQ['estado'] == estado.name else '' }}>{{ estado.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% if centros %}
+            <div class="centro-cards">
+                {% for centro in centros %}
+                    <div class="centro-box">
+                        <div class="centro-header">                        
+                            <div class="centro-name">{{ centro.name }}</div>
+                        </div>
+                        <hr>
+                        <div class="centro-info">
+                            <div class="centro-types">
+                                Tipo/s de centro:
+                                {% if centro.types %}
+                                    {% for tipo in centro.types %}
+                                        <p>{{ tipo.name.replace('_', ' ') }}</p>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            <div>Horario de atencion: {{ centro.opens_at.strftime('%H:%Mhs') }} a {{ centro.close_at.strftime('%H:%Mhs') }}</div>
+                            <div>Direccion: {{ centro.address }}</div>
+                            <div>
+                                {% if centro.publication_state %}
+                                    Estado: Publicado
+                                {% else %}
+                                    Estado: Despublicado
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="buttons">
+                            <a href="{{ url_for('centers.show', id=centro['id']) }}">Detalles</a>
+                            {% if centro.state != 4 %}
+                                <a href="{{ url_for('centers.update', center_id=centro['id']) }}">Editar</a>
+                                {% if "center_destroy" in user_permissions(session.get('username')) %}
+                                    <form onsubmit="return confirm('Esta seguro que quiere eliminar?');"  action="{{ url_for('centers.destroy', id=centro['id']) }}" method="POST" >
+                                        <input type="hidden" name="_method" value="DELETE" />
+                                        <button class="error" type="submit">Eliminar</button>
+                                    </form>
+                                {% endif %}
+                            {% endif%}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if total_pages > 1 %}
+                <div class="page-results-parent">
+                    <div class="page-results">
+                        {% for i in range(1, total_pages+1) %}
+                            {% if i == current_page %}
+                                <div class="page-number active">
+                                    {{ i }}
+                                </div>
+                            {% else %}
+                                <a href="{{ url_for('centers.index', page=i, busqueda=searchQ['busqueda'], estado=searchQ['estado']) }}">
+                                    <div class="page-number {{ 'active' if i == current_page else '' }}">
+                                        {{ i }}
+                                    </div>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="not-found">Ningun centro encontrado</div>
+        {% endif %}
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo Usuario{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='user/index.css') }}">
+{% endblock styles %}
+
+{% block content %}
+    <div class="form-container">
+        <form class="form" method="POST" action="{{ url_for('users.new') }}">
+            <input id="csrf_token" name="csrf_token" type="hidden" value="{{ last_form['csrf_token'] if last_form else CSRF_TOKEN_STRING }}">
+            <div class="form-title">Crear un nuevo usuario</div>
+            <div class="form-field">
+                <label for="usuario">Nombre de Usuario</label><br>
+                <!--
+                <div> Letras mayusculas y minusculas y caracteres ". _", pero estos ultimos no pueden estar ni al inicio ni al final.
+                    Su largo debe ser entre 3 y 20 caracteres.
+                </div>
+                -->
+                <input type="text" id="usuario" name="usuario" autofocus="" value="{{ last_form['usuario'] if last_form else '' }}" required>    
+            </div>
+            <div class="form-field">
+                <label for="password">Password</label><br>
+                <input type="password" id="password" name="password" required minlength="4" maxlength="32" value="{{ last_form['password'] if last_form else '' }}">  
+            </div>
+            <div class="form-field">
+                <label for="nombre">Nombre</label><br>
+                <input type="text" id="nombre" name="nombre" value="{{ last_form['nombre'] if last_form else '' }}" required>
+            </div>
+            <div class="form-field">
+                <label for="apellido">Apellido</label><br>
+                <input type="text" id="apellido" name="apellido" value="{{ last_form['apellido'] if last_form else ''}}" required>
+            </div>
+            <div class="form-field">
+                <label for="email">Email</label><br>
+                <input type="email" id="email" name="email" value="{{ last_form['email'] if last_form else '' }}" required>
+            </div>
+            <div class="buttons">
+                <button>Registrarse</button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

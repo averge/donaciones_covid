@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Ver centro{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='centers/show.css') }}">
+{% endblock styles %}
+
+{% block content %}
+    <div class="center-profile">
+        <div class="page-title">{{ center.name }}</div>
+        <div class="center-show-flex">
+            <div class="main-child">
+                <div class="centro-info">
+                    <div class="centro-types">
+                        {% if center.types %}
+                            <div class="data-row">
+                                <span class="category">Tipo/s de centro: </span>
+                                {% for tipo in center.types %}
+                                    <p class="tipo-centro">{{ tipo.name.replace('_', ' ') }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="data-row">
+                    <span class="category">Direccion: </span>{{ center.address }}
+                </div>
+                <div class="data-row">
+                    <span class="category">Municipio: </span>{{ muni_nombre }}
+                </div>
+                <div class="data-row">
+                    <span class="category"> Telefono: </span> {{ center.phone_number }}        
+                </div>
+                {% if center.email != "" %}
+                    <div class="data-row">
+                        <span class="category"> Mail: </span> {{ center.email }}        
+                    </div>
+                {% endif %}
+                {% if center.web != "" %}
+                    <div class="data-row">
+                        <span class="category"> Web: </span> {{ center.web }}        
+                    </div>
+                {% endif %}
+                <div class="data-row">
+                    <span class="category"> Abre a las: </span> {{ center.opens_at.strftime('%H:%Mhs')}}      
+                </div>
+                <div class="data-row">
+                    <span class="category"> Cierra a las: </span> {{ center.close_at.strftime('%H:%Mhs')}}        
+                </div>
+                {% if center.protocolo %}
+                    <div class="data-row">
+                        <span class="category">Protocolo de visita: </span>
+                        <a class="no-styles-a" href="{{UPLOADS_PUBLIC_DIRECTORY}}{{center.protocolo}}">Protocolo</a>
+                    </div>
+                {% endif %}
+                <div>
+                    <div class="data-row">
+                        {% if center.publication_state %}
+                            <span class="category">Estado: </span>Publicado
+                        {% else %}
+                            <span class="category">Estado: </span>Despublicado
+                        {% endif %}
+                    </div>
+                </div>
+                {% if center.state==2 %}
+                    <div class="buttons">
+                        <form onsubmit="return confirm('Está seguro que quiere Aprobar el centro?');"  action="{{ url_for('centers.approve', id=center.id) }}" method="POST" >
+                            <input type="hidden" name="_method" value="approve" />
+                            <input type="hidden" name="from_page" value="center_show" />
+                            <button class="success" type="submit">Aprobar</button>
+                        </form> 
+                        <form onsubmit="return confirm('Está seguro que quiere Rechazar el centro?');"  action="{{ url_for('centers.reject',id=center.id) }}" method="POST" >
+                            <input type="hidden" name="_method" value="REJECT" />
+                            <input type="hidden" name="from_page" value="center_show" />
+                            <button class="error" type="submit">Rechazar</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="map-child">
+                <div id="mapid" style="width: 100%; height: 100%;"></div>
+                <input type="hidden" id="lat" name="lat" value="{{ center.coordinates.split(',')[0] }}">
+                <input type="hidden" id="lng" name="lng" value="{{ center.coordinates.split(',')[1] }}">
+            </div>
+        </div>
+        {% if center.state < 4 %}  
+            <div class="buttons">
+                {% if center.state < 2 %}
+                    <a href="{{ url_for('centers.turns_index', id=center.id) }}">Ver turnos</a>
+                    {% if center.publication_state %}
+                        <form  action="{{ url_for('centers.despublicar', id=center.id) }}" method="POST"> 
+                            <input type="hidden" name="_method" value="despublicar" />
+                            <button type="submit">Despublicar</button>
+                        </form>
+                    {% else %}
+                        <form  action="{{ url_for('centers.publicar', id=center.id) }}" method="POST"> 
+                            <input type="hidden" name="_method" value="publicar" />
+                            <button type="submit">Publicar</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+                <a href="{{ url_for('centers.update', center_id=center.id) }}">Editar</a>
+                {% if "center_destroy" in user_permissions(session.get('username')) %}
+                    <form  onsubmit="return confirm('Esta seguro que quiere eliminar?');"  action="{{ url_for('centers.destroy', id=center.id) }}" method="POST"> 
+                        <input type="hidden" name="_method" value="despublicar" />
+                        <button class="error" type="submit">Eliminar</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script 
+        src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin="">
+    </script>
+    <script src="{{ url_for('static', filename='js/carga_municipios.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/center/mapa_show.js') }}"></script>
+{% endblock %}

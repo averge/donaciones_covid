@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo Centro{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+{% endblock styles %}
+{% block content %}
+    <div class="form-container">
+        <form class="form" method="POST" action="{{ url_for('centers.new') }}" enctype="multipart/form-data" onsubmit="submitHandler(event)">
+            <input id="csrf_token" name="csrf_token" type="hidden" value="{{ last_form['csrf_token'] if last_form else CSRF_TOKEN_STRING }}">
+            <div class="form-title">Crear un nuevo centro</div>
+            <div class="form-field">
+                <label for="nombre-centro">Nombre del centro</label><br>
+                <input type="text" id="nombre-centro" name="nombre-centro" autofocus="" value="{{ last_form['nombre-centro'] if last_form else '' }}" placeholder="Merendero Todos por una Sonrisa" required>    
+            </div>
+            <div class="form-field">
+                <label for="direccion">Dirección</label><br>
+                <input type="text" id="direccion" name="direccion" value="{{ last_form['direccion'] if last_form else '' }}"
+                placeholder="Calle 88 nro 1912, Altos de San Lorenzo" required>
+            </div>
+            <div class="form-field">
+                <label for="phone">Telefono (Incluir numero de area)</label><br>
+                <input type="tel" id="phone" name="phone" value="{{ last_form['phone'] if last_form else '' }}" placeholder="221 - 5930941" required>
+            </div>
+            <div class="form-field">
+                <label for="opens_at_hour">Horario de apertura (formato 24horas)</label><br>
+                <select name="opens_at_hour" id="opens_at_hour">
+                    {% for hour in range(24) %}
+                        <option value="{{hour}}" {{ 'selected' if ((last_form) and (hour|string  == last_form['opens_at_hour'])) }}>{{hour}}</option>
+                    {% endfor %}
+                </select>
+                <select name=opens_at_min id=opens_at_min>
+                        <option value="00" {{ 'selected' if ((last_form) and (00|string  == last_form['opens_at_min'])) }}>00</option>
+                        <option value="30" {{ 'selected' if ((last_form) and (30|string  == last_form['opens_at_min'])) }}>30</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label for="close_at_hour">Horario de cierre (formato 24horas)</label><br>
+                    <select name="close_at_hour" id="close_at_hour">
+                        {% for hour in range(24) %}
+                            <option value="{{hour}}" {{ 'selected' if ((last_form) and (hour|string  == last_form['close_at_hour'])) }} >{{hour}}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="close_at_min" id="close_at_min">
+                            <option value="00" {{ 'selected' if ((last_form) and (00|string  == last_form['close_at_min'])) }}>00</option>
+                            <option value="30" {{ 'selected' if ((last_form) and (30|string  == last_form['close_at_min'])) }}>30</option>
+                    </select>
+            </div>
+            <div class="form-field">
+                <label for="tipo">Tipo de centro de ayuda</label><br>
+                <select name="tipo" id="tipo">
+                    {% for t in center_types %}
+                        <option value="{{t.name}}" {{ 'selected' if ((last_form) and ( (t.name ) == last_form['tipo'])) }}>{{ (t.name.split("_"))|join(" ") }}  </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-field">
+                <label>Municipio</label><br>
+                <input placeholder="La Plata" type="text" list="municipios">
+                <datalist id="municipios"></datalist>
+                <input type="hidden" id="muni" name="muni" value="{{ last_form['muni'] if last_form else '' }}">
+            </div>
+            <div class="form-field">
+                <label for="web">Dirección Web</label><br>
+                <input type="url" id="web" name="web" value="{{ last_form['web'] if last_form else '' }}" placeholder="https://www.google.com.ar">
+            </div>
+            <div class="form-field">
+                <label for="email">Dirección de email</label><br>
+                <input type="email" id="email" name="email" value="{{ last_form['email'] if last_form else '' }}" placeholder="ejemplo@centro-ayuda.org.ar">
+            </div>
+            <div class="form-field">
+                <label for="protocolo">Protocolo de visita (PDF hasta 10MB)</label><br>
+                <input type="file" id="protocolo" name="protocolo" accept="application/pdf" >
+            </div>
+            <div class="form-field">
+                <label>Coordenadas (seleccione localizacion en el mapa)</label><br>
+                
+                <div id="mapid" style="width: 100%; height: 300px;"></div>
+                <input type="hidden" id="lat" name="lat" value="{{ last_form['lat'] if last_form else '' }}">
+                <input type="hidden" id="lng" name="lng" value="{{ last_form['lng'] if last_form else '' }}">
+            </div>
+            <div class="form-field-checkbox">
+                <label for="publication_state">Desea publicar el centro?</label>
+                <input type="checkbox" id="publication_state" name="publication_state" {{ 'checked' if last_form and last_form['publication_state'] else ''  }} >
+            </div>
+
+            <div class="buttons">
+                <button>Enviar</button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/carga_municipios.js') }}"></script>
+
+    <script 
+        src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin="">
+    </script>
+    
+    <script src="{{ url_for('static', filename='js/center/mapa_new_update.js') }}"></script>
+{% endblock scripts %}

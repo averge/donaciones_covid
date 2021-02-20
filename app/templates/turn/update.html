@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Actualizar Turno{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+{% endblock %}
+{% block content %}
+    <div class="form-container">
+        <form class="form" method="POST" action="{{ url_for('turns.update', id=turn.id) }}">
+            <input id="csrf_token" name="csrf_token" type="hidden" value="{{ CSRF_TOKEN_STRING }}">
+            <div class="form-title">Actualizar Turno</div>
+            <div class="form-field">
+                <label for="center-id">Para Centro</label><br>
+                <select name="center-id" id="center-id">
+                    {% for id in centers.keys() %}
+                        <option value="{{ id }}" {{ 'selected' if (id == turn.center) }}>{{ centers[id] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-field">
+                <label for="date">Fecha</label><br>
+                <input type="text" id="datepicker" name="datepicker" value="{{ date }}">
+            </div>
+            <div class="form-field">
+                <label for="start-hour">Hora</label><br>
+                <select name="start-hour" id="start-hour">
+                    {% for hour in hours %}
+                        <option value="{{hour}}" {{ 'selected'  if (hour|string == hour_block.strftime('%H:%M:%S').split(":")[0])}}>{{hour}}</option>
+                    {% endfor %}
+                </select>
+                <select name="start-minute" id="start-minute">
+                    <option value="00" {{ 'selected' if (( 00|string  == hour_block.strftime('%H:%M:%S').split(":")[1] )) }}>00</option>
+                    <option value="30" {{ 'selected' if (( 30|string  == hour_block.strftime('%H:%M:%S').split(":")[1] )) }}>30</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label for="phone">Telefono</label><br>
+                <input type="text" id="phone" name="phone" autofocus="" value="{{ turn.phone_number }}" required>
+            </div>
+            <div class="form-field">
+                <label for="email">E-mail</label><br>
+                <input type="email" id="email" name="email" value="{{ turn.email }}" required>
+            </div>
+            <div class="buttons">
+                <button>Actualizar</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{{ url_for ('static', filename='js/turn/update_calendar.js') }}"></script>
+{% endblock %}

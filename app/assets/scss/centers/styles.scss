@@ -1,0 +1,69 @@
+.centros-content {
+    width: 80vw;
+    .centro-cards {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: left;
+        .centro-box {
+            border-radius: 5%;
+            width: 29%;
+            background: #f3faff;
+            box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+            margin: 15px;
+            display: flex;
+            flex-direction: column;
+            padding: 0 10px;
+            .centro-header {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                .centro-name {
+                    font-size: 25px;
+                    margin: 5px;
+                    flex: 0 1 auto;
+                }
+    
+            }
+            .centro-info {
+                flex: 1;
+                .centro-types {
+                    margin-bottom: 15px;
+                    p {
+                        padding-left: 20px;
+                        margin: 0;
+                    }
+                }
+            }
+            hr {
+                width: 100%;
+            }
+        }
+    }
+}
+
+
+@media only screen and (max-width: 360px) {
+    .centros-content {
+        width: 100vw;
+        .centro-cards {
+            flex-direction: column;
+            flex-wrap: nowrap;
+            justify-content: center;
+            .centro-box {
+                width: calc(100vw - 50px);
+            }
+        }
+    }
+}
+
+@media only screen and (min-width : 361px) and (max-width : 768px) {
+    .centros-content {
+        .centro-cards {
+            flex-wrap: nowrap;
+            justify-content: center;
+            .centro-box {
+                min-width: 40vw;
+            }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Configuración{% endblock %}
+
+{% block content %}
+    <div class="page-title">Configuracion del sitio</div>
+    <div class="form-container">
+        <form class="form" method="POST" action="{{ url_for('configuration.update') }}">
+            <input id="csrf_token" name="csrf_token" type="hidden" value="{{ CSRF_TOKEN_STRING }}">
+            {% for key in configs.keys() %}
+                <div class="form-category">
+                    <div class="form-title"> {{key.capitalize()}}</div>
+                    {% for element in configs[key] %}
+                        {% if element[0].split(".")[1] == 'habilitado' %}
+                            <div class="form-field-checkbox">
+                                <label for="{{element[0]}}"> {{element[0].split(".")[1].capitalize().split("_")|join(" ")}} </label><br>
+                                <input type="checkbox" id="{{element[0]}}" name="{{element[0]}}" {{ 'checked' if element[1] == 'TRUE' else ''  }}>
+                            </div>
+                        {% else %}
+                            <div class="form-field">
+                                <label for="{{element[0]}}"> {{element[0].split(".")[1].capitalize().split("_")|join(" ")}} </label><br>
+                                <input type="text" id="{{element[0]}}" name="{{element[0]}}" value="{{element[1]}}" required>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <div class="buttons">
+                <button>Guardar</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

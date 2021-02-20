@@ -1,0 +1,76 @@
+label, .label-title {
+  font-size: 18px; }
+
+  .form-container {
+    margin: auto; }
+
+    .form {
+      background: #f3faff;
+      box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+      width: 30vw;
+      margin: auto; }
+
+      .form-field {
+        margin: 12px 0;
+        width: 100%; }
+        .form-field input {
+          margin-top: 2px;
+          border: 1px solid #ccc;
+          background: #FFF;
+          padding: 10px;
+          width: calc(100% - 22px); }
+          .form-field input:read-only {
+            border-color: darkgrey;
+            border-style: solid;
+            border-width: 1px;
+            background-color: #ddd;
+            color: #545454;
+            cursor: default; }
+
+.form-title {
+  font-size: 30px;
+  margin-bottom: 20px; }
+
+  .double-field-title {
+    font-size: 18px; }
+
+    .form-field-double {
+      display: flex;
+      padding: 0 15px;
+      border: grey 1px solid;
+      justify-content: space-between; }
+      .form-field-double .form-field {
+        width: 45%; }
+
+.form-field-checkbox {
+  display: flex;
+  justify-content: left;
+  margin: 6px 0 6px 5px;
+  width: 100%; }
+  .form-field-checkbox input {
+    position: relative;
+    top: 2.5px; }
+
+.form-category {
+  border: 1px solid grey;
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 10px;
+  width: 100%; }
+
+  @media only screen and (max-width: 360px) {
+    .form-container {
+      margin: auto 2vw;
+      width: 90vw;   }
+      .form-container .form {
+        width: auto;   }
+}
+
+@media only screen and (min-width : 361px) and (max-width : 768px) {
+  .form-container .form {
+    width: 50vw;   }
+}

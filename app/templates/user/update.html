@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Modificar usuario{% endblock %}
+
+{% block content %}
+    <div class="form-container">
+        <form class="form" method="POST" action="{{ url_for('users.update', username=user['username']) }}">
+            <input id="csrf_token" name="csrf_token" type="hidden" value="{{ CSRF_TOKEN_STRING }}">
+            <div class="form-title">Modificar</div>
+            <div class="form-field">
+                <label for="usuario">Nombre de Usuario</label><br>
+                <input type="text" id="usuario" name="usuario" value="{{ user['username'] }}" required readonly>
+            </div>
+            <div class="form-field pointer-box">
+                <span class="double-field-title">Cambiar password</span>
+                <div class="form-field-double">
+                    <div class="form-field">
+                        <label for="password">Password</label><br>
+                        <input type="password" id="password" name="password" value="">    
+                    </div>
+                    <div class="form-field">
+                        <label for="newPassword">Nuevo password</label><br>
+                        <input type="password" id="newPassword" name="newPassword" minlength="4" maxlength="32">
+                    </div>
+                </div>
+            </div>
+            <div class="form-field">
+                <label for="nombre">Nombre</label><br>
+                <input type="text" id="nombre" name="nombre" autofocus value="{{ user['first_name'] }}" required>
+            </div>
+            <div class="form-field">
+                <label for="apellido">Apellido</label><br>
+                <input type="text" id="apellido" name="apellido" value="{{ user['last_name'] }}" required>
+            </div>
+            <div class="form-field">
+                <label for="email">Email</label><br>
+                <input type="email" id="email" name="email" value="{{ user['email'] }}" required>
+            </div>
+            <div class="form-field-double">
+                <div>
+                    <div class="label-title">Asignar roles</div>
+                        <div>
+                            {%for role in roles%}
+                                {% if role.name == "administrador_del_sistema" %}
+                                    {% if not (user.username == session.get('username')) %}
+                                        <div class="form-field-checkbox">
+                                            <label for="{{role.name}}">{{role.name.capitalize().split("_")|join(" ")}}</label><br>
+                                            <input type="checkbox" id="{{role.name}}" name="{{role.name}}" {{ 'checked' if user.has_role(role.name) else '' }} >
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="form-field-checkbox">
+                                        <label for="{{role.name}}">{{role.name.capitalize().split("_")|join(" ")}}</label><br>
+                                        <input type="checkbox" id="{{role.name}}" name="{{role.name}}" {{ 'checked' if user.has_role(role.name) else '' }} >
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                </div>
+            </div>
+
+            {% if not user.es_admin() or ((user.es_admin() and not user.es_activo())) or (user.es_admin() and not new_form ) %}
+                <div class="form-field-checkbox">
+                    <label for="activo">Es usuario activo</label><br>
+                    <input type="checkbox" id="activo" name="activo" {{ 'checked' if user.es_activo() else '' }} >
+                </div>
+            {% endif %}
+
+            <div class="buttons">
+                <button>Guardar</button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

@@ -1,0 +1,8 @@
+.no-disponible {
+  color: grey; }
+
+  .ocupado {
+    color: #dc3545; }
+
+    .libre {
+      color: #28a745; }

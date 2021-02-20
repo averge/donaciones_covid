@@ -1,0 +1,22 @@
+.center-profile {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  height: 100%; }
+  .center-profile .page-title {
+    flex: 0 0 50px;
+    overflow: hidden; }
+    .center-profile .center-show-flex {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      justify-content: space-between; }
+      .center-profile .center-show-flex .main-child {
+        width: 40%; }
+        .center-profile .center-show-flex .map-child {
+          width: 60%; }
+  .center-profile .buttons {
+    margin-top: 30px; }
+
+.tipo-centro {
+  margin: 0 0 0 30px; }

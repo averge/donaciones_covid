@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Centros pendientes de Aprobación{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='centers/styles.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="page-title">Centros pendientes de Aprobación</div>
+    <div class="centros-content">
+        <div class="search-bar">
+            <form id="search-form" action="{{ url_for('centers.pending_index') }}">
+                <input type="text" placeholder="Buscar centro..." id="busqueda" name="busqueda" value="{{ search if search else '' }}">
+                {% if search %}   
+                    <a id="search-remove" href="{{ url_for('centers.pending_index') }}">
+                        <img alt="Icono para remover busqueda" src="{{ url_for('static', filename='icons/remove.png') }}">
+                    </a>
+                {% endif %}
+                <img id="search-lupa" alt="Icono de lupa" src="{{ url_for('static', filename='icons/lupa.png') }}">
+            </form>
+        </div>
+        {% if centros %}
+        <div class="centro-cards">
+            {% for centro in centros %}
+                <div class="centro-box">
+                    <div class="centro-header">                        
+                        <div class="centro-name">{{ centro.name }}</div>
+                    </div>
+                    <hr>
+                    <div class="centro-info">
+                        <div class="centro-types">
+                            Tipo/s de centro:
+                            {% if centro.types %}
+                                {% for tipo in centro.types %}
+                                    <p>{{ tipo.name.replace('_', ' ') }}</p>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <div>Horario de atencion: {{ centro.opens_at.strftime('%H:%Mhs') }} a {{ centro.close_at.strftime('%H:%Mhs') }}</div>
+                        <div>Direccion: {{ centro.address }}</div>
+                    </div>
+                    <div class="buttons">
+                        <a href="{{ url_for('centers.show', id=centro['id']) }}">Detalles</a>
+                        <form onsubmit="return confirm('Está seguro que quiere Aprobar el centro?');"  action="{{ url_for('centers.approve', id=centro['id']) }}" method="POST" >
+                            <input type="hidden" name="_method" value="approve" />
+                            <input type="hidden" name="from_page" value="pending" />
+                            <button class="success" type="submit">Aprobar</button>
+                        </form>
+                        <form onsubmit="return confirm('Está seguro que quiere Rechazar el centro?');"  action="{{ url_for('centers.reject', id=centro['id']) }}" method="POST" >
+                            <input type="hidden" name="_method" value="REJECT" />
+                            <input type="hidden" name="from_page" value="pending" />
+                            <button class="error" type="submit">Rechazar</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% if total_pages > 1 %}
+            <div class="page-results-parent">
+                <div class="page-results">
+                    {% for i in range(1, total_pages+1) %}
+                        {% if i == current_page %}
+                            <div class="page-number active">
+                                {{ i }}
+                            </div>
+                        {% else %}
+                            <a href="{{ url_for('centers.pending_index', page=i, busqueda=search) }}">
+                                <div class="page-number {{ 'active' if i == current_page else '' }}">
+                                    {{ i }}
+                                </div>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="not-found">Ningun centro encontrado</div>
+    {% endif %}
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+{% endblock %}

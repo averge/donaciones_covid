@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}{{homeConfiguration['home.titulo']}}{% endblock %}
+{% block content %}
+    {% if homeConfiguration['home.habilitado'] == "FALSE" %}
+        <div class="page-title">{{ homeConfiguration['home.mensaje_deshabilitado'] }}</div>
+    {% else %}
+        <div class="page-title">{{ homeConfiguration['home.titulo'] }}</div>
+        <div id="site-description">{{ homeConfiguration['home.descripcion'] }}</div>
+    {% endif %}
+{% endblock %}
+
+{% block footer %}
+    <div>
+        <span id="mail-de-contacto">Mail de contacto: </span>{{ homeConfiguration['home.mail_de_contacto'] }}
+    </div>
+{% endblock %}

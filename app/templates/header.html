@@ -1,0 +1,43 @@
+<header class="header">
+    <a id="app-icon" href="{{ url_for('home') }}">
+        <img src="{{ url_for('static', filename='icons/app-logo.png') }}" alt="Icono brazos">
+    </a>
+    <nav>
+        <div class="hamburguer-menu">
+            <span></span>
+            <span></span>
+            <span></span>    
+        </div>
+        <div class="nav-box">
+            <ul>
+                {% if not check_login() %}
+                    <li><a href="{{ url_for('auth.login') }}"> Login </a></li>
+                {% else %}
+                    <li><a href="{{ url_for('users.show', username=session.get('username')) }}">Perfil</a></li>
+                    {% if "center_index" in user_permissions(session["username"]) %}
+                        <li><a href="{{ url_for('centers.index') }}">Lista de centros</a></li>
+                    {% endif %}
+                    {% if "center_pending_index" in user_permissions(session["username"]) %}
+                        <li><a href="{{ url_for('centers.pending_index') }}">Centros Pendientes</a></li>
+                    {% endif %}
+                    {% if "center_new" in user_permissions(session["username"]) %}
+                        <li><a href="{{ url_for('centers.new') }}">Cargar centro de ayuda</a></li>
+                    {% endif %}
+                    {% if "user_index" in user_permissions(session["username"]) %}
+                        <li><a href="{{ url_for('users.index') }}">Lista de Usuarios</a></li>
+                    {% endif %}
+                    {% if "user_new" in user_permissions(session["username"]) %}
+                        <li><a href="{{ url_for('users.new') }}">Crear Usuario</a></li>
+                    {% endif %}
+                    {% if "configuration_index" in user_permissions(session["username"]) %}
+                        <li><a href="{{ url_for('configuration.index') }}">Configuración</a></li>
+                    {% endif %}
+                    {% if "turn_index" in user_permissions(session["username"]) %}
+                        <li><a href="{{ url_for('turns.index') }}">Buscar turno</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('auth.logout') }}"> Log out </a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>       
+</header>

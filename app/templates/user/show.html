@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil de {{user.username}}{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='user/styles.css') }}">
+{% endblock styles %}
+
+{% block content %}
+    <div class="user-profile">
+        <div class="page-title">
+            Perfil de {{ user.username }}
+            {% if not user.es_activo() %}
+                <span>(Este usuario no esta activo)</span>
+            {% endif %}
+        </div>
+        <div class="data-row">
+            <span class="category">Nombre y apellido: </span>{{ user.first_name }} {{ user.last_name }}
+        </div>
+        <div class="data-row">
+            <span class="category">Email: </span>{{ user.email }}
+        </div>
+        <div class="data-row">
+            <span class="category">Fecha de ingreso al sistema: </span>{{ user.created_at }}
+        </div>
+        {% if user.roles %}
+            <div>
+                <div class="roles-row">
+                    <span class="category">Roles:</span>
+                    {% for rol in user.roles %}
+                        <div>{{ rol.name.replace("_"," ").capitalize() }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}

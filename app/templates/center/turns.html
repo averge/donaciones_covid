@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %} Turnos del Centro "{{center.name}}" {% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='centers/turns.css') }}">
+{% endblock %}
+{% block content %}
+    <div class="page-title">Turnos del centro "{{center.name}}" </div>
+    <p>Fecha: <input type="text" id="datepicker" value="{{ date }}"></p>
+    <form id="date-form" action="{{ url_for('centers.turns_index', id=center['id']) }}">
+        <input hidden id="fecha" name="fecha" value="{{ date }}">
+    </form>
+    <div class="buttons">
+        <a href="{{url_for('centers.turns_index', id=center.id, fecha=today_show)}}" >Hoy</a>
+        <a href="{{url_for('centers.turns_index', id=center.id, fecha=tomorrow)}}" >Mañana</a>
+        <a href="{{url_for('centers.turns_index', id=center.id, fecha=day_after_tomorrow)}}" >Trasmañana</a>
+    </div>
+    <table class="turns-table">
+        <tr class="table-header">
+            <th>Hora </th>
+            <th>Disponibilidad</th>
+            <th>Acciones</th>
+        </tr>
+        {% for turn in turns %}
+            {%if turn.id == -1 %}
+                {% if ((turn.date < today) or ((turn.date == today) and (turn.hour_block <= time_now))) %}
+                    <tr class="past-turn">
+                        <td>{{ turn.hour_block.strftime('%H:%M') }}</td>
+                        <td class="no-disponible">No disponible</td>
+                        <td></td>
+                    </tr>
+                {% else %}
+                    <tr class="free-turn">
+                        <td>{{ turn.hour_block.strftime('%H:%M') }}</td>
+                        <td class="libre">Disponible</td>
+                        <td>
+                            <a class="no-styles-a" href="{{ url_for('turns.new', center_id=center.id, date=turn.date, start_hour=turn.hour_block) }}">Asignar</a>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% else %}
+                <tr class="taken-turn">
+                    <td>{{ turn.hour_block.strftime('%H:%M') }}</td>
+                    <td class="ocupado">Ocupado</td>
+                    <td>
+                        <a class="no-styles-a" href="{{ url_for('turns.show', id=turn.id) }}">Mostrar</a>
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+{% endblock %}
+{% block scripts %}
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{{ url_for ('static', filename='js/center/center_turns.js') }}"></script>
+{% endblock %}
